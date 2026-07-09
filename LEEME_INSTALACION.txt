@@ -1,0 +1,54 @@
+# Rifita en Netlify + Apps Script backend
+
+Este paquete deja de usar iframe. Netlify muestra la app y Apps Script queda como backend para Google Sheets.
+
+## Archivos
+
+- `index.html`: la app principal de Rifita adaptada para Netlify.
+- `netlify/functions/api.js`: puente entre Netlify y Apps Script.
+- `apps-script/Code.gs`: tu Code.gs actualizado con el dispatcher `apiNetlifyCall_`.
+- `netlify.toml`: configuración simple de Netlify.
+
+## Instalación paso a paso
+
+### 1) Apps Script
+
+1. Abrí el proyecto principal de Rifita.
+2. Reemplazá `Code.gs` por `apps-script/Code.gs`.
+3. Guardá.
+4. Andá a `Implementar > Administrar implementaciones`.
+5. Editá la Web App.
+6. Configuración:
+   - Ejecutar como: `Yo`
+   - Usuarios con acceso: `Cualquier persona`
+7. Elegí `Nueva versión` y actualizá.
+8. Copiá el link `/exec`.
+
+### 2) Netlify
+
+1. Entrá a Netlify.
+2. Creá un sitio nuevo usando drag-and-drop o subiendo esta carpeta.
+3. En `Site configuration > Environment variables`, agregá:
+
+```text
+APPS_SCRIPT_URL=https://script.google.com/macros/s/TU_IMPLEMENTACION/exec
+```
+
+4. Hacé redeploy.
+
+Si no configurás la variable, el archivo `api.js` trae como fallback el link que venías usando, pero conviene usar la variable de entorno para cambiarlo fácil.
+
+## Prueba rápida
+
+Abrí tu URL de Netlify. Debería mantener el dominio de Netlify y no cargar Apps Script dentro de iframe.
+
+## Importante
+
+- No borres `netlify/functions/api.js`.
+- No borres el bloque `NETLIFY BRIDGE` dentro de `index.html`.
+- La carga de imágenes de publicidad puede fallar si la imagen es muy grande. Probá con imágenes livianas, idealmente menos de 3 MB.
+- Si Netlify dice que Apps Script no devuelve JSON, casi siempre es porque la Web App no está publicada como `Cualquier persona` o la URL `/exec` está vieja.
+
+## Qué quedó pendiente para una versión más profesional
+
+Esto es una migración rápida y práctica usando un puente compatible con `google.script.run`. Más adelante se puede separar el HTML, CSS y JS en archivos limpios y convertir cada llamada a `fetch()` manualmente.

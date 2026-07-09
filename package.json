@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "dev": "netlify dev"
+  },
+  "dependencies": {}
+}
