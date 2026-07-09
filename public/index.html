@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Rifita</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div id="rifaLogin" class="loginShell">
+  <div class="loginCard">
+    <div class="loginTitle">🎟️ Rifita</div>
+    <div class="loginSub">Ingresá el código de tu rifa para continuar.</div>
+    <label>Código de rifa</label>
+    <input id="rifaCodeInput" autocomplete="off" enterkeyhint="go">
+    <label class="rememberDeviceCheck"><input id="rememberDeviceCheck" type="checkbox"><span>Recordar este dispositivo</span></label>
+    <div class="hint">Si no marcás esta opción, el código no queda guardado al cerrar.</div>
+    <button id="enterRifaBtn" class="btnOk" type="button">Entrar</button>
+    <div class="msg" id="rifaLoginMsg"></div>
+  </div>
+</div>
+
+<div class="appShell hidden" id="appShell">
+<header>
+  <div class="title" id="titleMain">🎟️ Rifita</div>
+  <div class="sub" id="subline">Cargando…</div>
+  <div class="tabs">
+    <div class="tab active" id="tSale" data-tab="sale">Venta</div>
+    <div class="tab" id="tBoard" data-tab="board">Tablero</div>
+    <div class="tab" id="tPub" data-tab="pub">Publicidad</div>
+    <div class="tab adminOnly" id="tDel" data-tab="del">Eliminar</div>
+    <div class="tab adminOnly" id="tDraw" data-tab="draw">Sorteo</div>
+    <div class="tab adminOnly" id="tConfig" data-tab="config">Configuración</div>
+    <div class="tab adminOnly" id="tReport" data-tab="report">Reportes</div>
+    <div class="tab" id="tChangeRifa">Cambiar rifa</div>
+  </div>
+  <div class="modeRow">
+    <div class="modeBadge" id="adminState">Modo: vendedor</div>
+    <select id="modeSelect"><option value="public">👤 Vendedor</option><option value="admin">🔐 Administrador</option></select>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="card summaryCard">
+    <div class="statsRow">
+      <div class="pill"><b id="soldCount">–</b><span>Vendidos</span></div>
+      <div class="pill"><b id="availCount">–</b><span>Disponibles</span></div>
+      <div class="pill"><b id="rangeTxt">–</b><span>Rango</span></div>
+    </div>
+    <button type="button" id="refreshBtn">🔄 Actualizar datos</button>
+  </div>
+
+  <div id="tabSale" class="card">
+    <b>✅ Cargar venta</b>
+    <label>Número disponible</label><select id="saleNumero"></select>
+    <div id="saleTypeBox" class="hidden"><label>Tipo de precio</label><select id="saleTipoPrecio"><option value="1">1 número</option><option value="2">Promo 2 números</option></select></div>
+    <div id="saleNumero2Box" class="hidden"><label>Segundo número disponible</label><select id="saleNumero2"></select></div>
+    <label>Nombre y apellido</label><input id="saleNombre" placeholder="Ej: Juan Pérez">
+    <div class="row"><div><label>DNI</label><input id="saleDni" inputmode="numeric" placeholder="Ej: 40123456"></div><div><label>Teléfono</label><input id="saleTel" inputmode="numeric" placeholder="Ej: 2984123456"></div></div>
+    <label>Vendedor</label><select id="saleVend"></select>
+    <button type="button" id="confirmSaleBtn">Confirmar venta</button>
+    <div class="msg" id="saleMsg"></div>
+    <div id="saleWhatsappBox" class="hidden"><button class="btnOk" type="button" id="saleWhatsappBtn">📲 Enviar comprobante por WhatsApp</button></div>
+  </div>
+
+  <div id="tabBoard" class="card hidden">
+    <b>📋 Tablero de números</b><div class="hint">Tocá un número verde para cargarlo automáticamente en la venta.</div>
+    <div class="row"><div><label>Desde</label><input id="boardFrom" type="number" min="1"></div><div><label>Hasta</label><input id="boardTo" type="number" min="1"></div></div>
+    <div class="rangeQuickBtns"><button data-board="1,50">1–50</button><button data-board="51,100">51–100</button><button data-board="101,150">101–150</button><button data-board="151,200">151–200</button></div>
+    <button class="btnOk" type="button" id="renderBoardBtn">Ver rango</button><div class="hint">Verde: disponible · Rojo: vendido</div><div id="boardGrid" class="boardGrid"></div>
+  </div>
+
+  <div id="tabPub" class="card hidden">
+    <b>📣 Publicidad</b><div class="hint">El administrador puede dejar un mensaje general. Cada vendedor puede cambiar el mensaje inferior para poner su alias propio.</div>
+    <div class="pubAdminPanel">
+      <b class="sectionTitle">🔐 Fondo de publicidad (admin)</b>
+      <label>Imagen de fondo fija</label><div class="filePickWrap"><input id="pubImageFileAdmin" class="fileInputNative" type="file" accept="image/*"><div class="filePickBtn">📷 Elegir Imagen</div></div>
+      <div class="hint" id="pubImageFileName">Ningún archivo elegido.</div><button class="btnOk" type="button" id="uploadBgBtn">Subir y guardar fondo</button><div class="hint" id="pubImageSavedHint">Sin imagen guardada.</div>
+    </div>
+    <div class="row"><div><label>Desde número</label><input id="pubFrom" type="number" min="1"></div><div><label>Hasta número</label><input id="pubTo" type="number" min="1"></div></div>
+    <div class="rangeQuickBtns"><button data-pub="1,50">1–50</button><button data-pub="51,100">51–100</button><button data-pub="101,150">101–150</button><button data-pub="151,200">151–200</button></div>
+    <label>Vendedor</label><select id="pubVend"></select>
+    <label>Mensaje inferior del flyer</label><textarea id="pubFooterMsg" placeholder="Ej: Alias: mi.alias.mp\nEnviar comprobante por WhatsApp"></textarea>
+    <button type="button" id="useGeneralFooterBtn">Usar mensaje general</button>
+    <button class="btnOk" type="button" id="generateFlyerBtn">Generar publicidad</button>
+    <div class="pubActions"><button type="button" id="downloadFlyerBtn">Descargar imagen</button><button type="button" id="copyPubMsgBtn">Copiar mensaje</button></div>
+    <div class="flyerPreviewBox"><canvas id="flyerCanvas" width="1080" height="1920"></canvas></div><div class="msg" id="pubMsg"></div>
+  </div>
+
+  <div id="tabDel" class="card hidden"><b>🗑️ Eliminar venta</b><label>Número vendido</label><select id="delNumero"></select><button type="button" class="btnBlue" id="loadSaleBtn">Ver datos</button><div class="hint" id="delInfo"></div><button type="button" class="btnDanger" id="deleteSaleBtn">Eliminar venta</button><div class="msg" id="delMsg"></div></div>
+
+  <div id="tabDraw" class="card hidden"><b>🎲 Sorteo</b><label>Cantidad de ganadores</label><input id="winnerCount" type="number" min="1" value="1"><button class="btnOk" id="drawBtn" type="button">Sortear</button><button id="resetWinnersBtn" class="btnDanger" type="button">Resetear ganadores</button><div id="winnerBox" class="sectionMsg"></div><div class="msg" id="drawMsg"></div></div>
+
+  <div id="tabConfig" class="card hidden"><b>⚙️ Configuración</b><div class="row"><div><label>Desde número</label><input id="cfgStart" type="number"></div><div><label>Hasta número</label><input id="cfgEnd" type="number"></div></div><button id="saveRangeBtn" type="button" class="btnOk">Guardar rango</button><div class="divider"></div><div class="row"><div><label>Precio 1 número</label><input id="cfgPrecio1" type="number"></div><div><label>Precio promo 2 números</label><input id="cfgPrecio2" type="number"></div></div><label class="inlineCheck"><input id="cfgPromo" type="checkbox"> Promo 2 números activa</label><label>Título publicidad</label><input id="cfgPubTitulo"><label>Premios</label><textarea id="cfgPubPremios"></textarea><label>Contacto</label><input id="cfgPubContacto"><label>Texto extra</label><textarea id="cfgPubExtra"></textarea><label>Mensaje inferior general</label><textarea id="cfgPubFooter"></textarea><button id="saveConfigBtn" class="btnOk" type="button">Guardar configuración</button><div class="divider"></div><b>Vendedores</b><label>Nuevo vendedor</label><input id="newSeller"><button id="addSellerBtn" type="button" class="btnOk">Agregar vendedor</button><label>Eliminar vendedor</label><select id="deleteSellerSelect"></select><button id="deleteSellerBtn" type="button" class="btnDanger">Eliminar vendedor</button><div class="msg" id="configMsg"></div></div>
+
+  <div id="tabReport" class="card hidden"><b>📊 Reportes</b><button id="loadReportsBtn" type="button">Actualizar reportes</button><button id="downloadSoldCsvBtn" type="button">Descargar vendidos CSV</button><button id="downloadSellerCsvBtn" type="button">Descargar resumen CSV</button><div id="reportBox" class="sectionMsg"></div><div class="msg" id="reportMsg"></div></div>
+</div>
+</div>
+
+<div id="pinOverlay" class="modalOverlay hidden"><div class="modal"><div class="modalTitle">🔐 Entrar como administrador</div><div class="modalSub">Ingresá el PIN de esta rifa.</div><label>PIN</label><input id="pinInput" type="password" inputmode="numeric"><div class="modalBtns"><button id="cancelPinBtn" type="button">Cancelar</button><button id="confirmPinBtn" class="btnOk" type="button">Entrar</button></div><div id="pinMsg" class="msg"></div></div></div>
+<script src="/app.js"></script>
+</body>
+</html>

@@ -1,64 +1,108 @@
-# Rifita en Netlify + Apps Script backend
+RIFITA FULL NETLIFY - SIN APPS SCRIPT COMO WEB APP
+==================================================
 
-Este paquete deja de usar iframe. Netlify muestra la app y Apps Script queda como backend para Google Sheets.
+Esta versión usa:
+- Netlify como sitio público y backend.
+- Google Sheets API + Google Drive API con Service Account.
+- Google Sheets como base de datos.
 
-## Archivos
+Ya NO usa iframe, NO usa Google Sites y NO depende de que Apps Script deje entrar anónimos.
 
-- `index.html`: la app principal de Rifita adaptada para Netlify.
-- `netlify/functions/api.js`: puente entre Netlify y Apps Script.
-- `apps-script/Code.gs`: tu Code.gs actualizado con el dispatcher `apiNetlifyCall_`.
-- `netlify.toml`: configuración simple de Netlify.
+ARCHIVOS
+--------
+public/index.html        App principal Rifita
+public/admin.html        Administrador de rifas
+public/app.js            Lógica de la app principal
+public/admin.js          Lógica del administrador
+public/style.css         Estilos
+netlify/functions/api.js Backend/API
+netlify.toml             Configuración Netlify
+package.json             Dependencias
 
-## Instalación paso a paso
+PASO 1 - GOOGLE CLOUD
+---------------------
+1) Crear un proyecto en Google Cloud.
+2) Activar estas APIs:
+   - Google Sheets API
+   - Google Drive API
+3) Crear una Service Account.
+4) Crear una key JSON para esa Service Account.
 
-### 1) Apps Script
+PASO 2 - COMPARTIR ARCHIVOS CON LA SERVICE ACCOUNT
+--------------------------------------------------
+En el JSON vas a ver un email parecido a:
 
-1. Abrí el proyecto principal de Rifita.
-2. Reemplazá `Code.gs` por `apps-script/Code.gs`.
-3. Guardá.
-4. Andá a `Implementar > Administrar implementaciones`.
-5. Editá la Web App.
-6. Configuración:
-   - Ejecutar como: `Yo`
-   - Usuarios con acceso: `Cualquier persona`
-7. Elegí `Nueva versión` y actualizá.
-8. Copiá el link `/exec`.
+rifita-bot@tu-proyecto.iam.gserviceaccount.com
 
-### 2) Netlify
+Compartí con ese email como EDITOR:
+- La planilla MASTER donde está CONFIG_RIFAS.
+- La planilla TEMPLATE, si vas a usar plantilla.
+- La carpeta raíz RIFITA, si querés que cree carpetas dentro de tu Drive.
 
-1. Entrá a Netlify.
-2. Creá un sitio nuevo usando drag-and-drop o subiendo esta carpeta.
-3. En `Site configuration > Environment variables`, agregá:
+PASO 3 - VARIABLES EN NETLIFY
+-----------------------------
+En Netlify, en el sitio:
+Site configuration > Environment variables
 
-```text
-APPS_SCRIPT_URL=https://script.google.com/macros/s/TU_IMPLEMENTACION/exec
-```
+Agregar:
 
-4. Hacé redeploy.
+GOOGLE_SERVICE_ACCOUNT_EMAIL = email de la service account
+GOOGLE_PRIVATE_KEY = private_key del JSON
+MASTER_SS_ID = ID de la planilla master
+TEMPLATE_SS_ID = ID de la plantilla de rifa (opcional, recomendado)
+RIFITA_ROOT_FOLDER_ID = ID de la carpeta RIFITA en Drive (opcional, recomendado)
+ADMIN_APP_PIN = PIN maestro para entrar a /admin.html
 
-Si no configurás la variable, el archivo `api.js` trae como fallback el link que venías usando, pero conviene usar la variable de entorno para cambiarlo fácil.
+IMPORTANTE PRIVATE KEY:
+- Copiala completa desde el JSON, incluyendo:
+  -----BEGIN PRIVATE KEY-----
+  -----END PRIVATE KEY-----
+- Si Netlify la guarda en una sola línea con \n, también funciona.
 
-## Prueba rápida
+PASO 4 - SUBIR A GITHUB Y NETLIFY
+---------------------------------
+Subí la carpeta completa a GitHub:
 
-Abrí tu URL de Netlify. Debería mantener el dominio de Netlify y no cargar Apps Script dentro de iframe.
+git add .
+git commit -m "Rifita full Netlify"
+git push
 
-## Importante
+Después en Netlify:
+Add new project > Import from Git > elegir repo.
 
-- No borres `netlify/functions/api.js`.
-- No borres el bloque `NETLIFY BRIDGE` dentro de `index.html`.
-- La carga de imágenes de publicidad puede fallar si la imagen es muy grande. Probá con imágenes livianas, idealmente menos de 3 MB.
-- Si Netlify dice que Apps Script no devuelve JSON, casi siempre es porque la Web App no está publicada como `Cualquier persona` o la URL `/exec` está vieja.
+Configuración:
+Build command: vacío
+Publish directory: public
+Functions directory: netlify/functions
 
-## Qué quedó pendiente para una versión más profesional
+PASO 5 - PROBAR API
+-------------------
+Abrí:
 
-Esto es una migración rápida y práctica usando un puente compatible con `google.script.run`. Más adelante se puede separar el HTML, CSS y JS en archivos limpios y convertir cada llamada a `fetch()` manualmente.
+https://TU-SITIO.netlify.app/.netlify/functions/api
 
+Tiene que devolver JSON con service: "Rifita Netlify API".
 
-## FIX v2: puente GET
+PASO 6 - USAR
+-------------
+App principal:
+https://TU-SITIO.netlify.app/
 
-Esta versión cambia el puente Netlify -> Apps Script para usar GET en vez de POST.
-Esto soluciona el caso donde PowerShell/Netlify devuelve `401 No autorizado` al hacer POST, aunque el link `/exec?action=init...` funcione bien en el navegador.
+Administrador:
+https://TU-SITIO.netlify.app/admin.html
 
-Después de subir esta versión a GitHub, en Netlify hacé redeploy. En Apps Script pegá también el `apps-script/Code.gs` de esta carpeta y actualizá la implementación con nueva versión.
+ESTRUCTURA DE SHEETS
+--------------------
+MASTER: hoja CONFIG_RIFAS con columnas:
+CODIGO, NOMBRE, SHEET_ID, PIN_ADMIN, ACTIVA, FECHA, FOLDER_ID, FOLDER_URL
 
-Limitación: subir imágenes grandes de publicidad desde Netlify puede requerir una solución aparte, porque GET no sirve para enviar archivos grandes.
+Cada rifa usa hojas:
+LISTAS
+VENTAS
+SORTEO_GANADORES
+
+NOTAS
+-----
+- Esta versión está pensada para funcionar públicamente sin login de Google.
+- No integra Mercado Pago todavía.
+- Para rifas con cobros/premios, revisá permisos legales con un adulto responsable antes de publicar o cobrar.

@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Rifita</title><link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="wrap" style="max-width:1100px">
+  <div class="card"><div class="title">🎟️ Admin de Rifitas</div><div class="hint">Crear rifas, activar/desactivar y abrir planillas.</div><label>PIN maestro del administrador</label><input id="adminPin" type="password" placeholder="Configuralo en ADMIN_APP_PIN"><button id="loadBtn" class="btnOk">Entrar / actualizar listado</button><div id="mainMsg" class="msg"></div></div>
+  <div class="card"><b>➕ Crear nueva rifa</b><div class="row"><div><label>Código</label><input id="codigo" placeholder="lechon-julio"></div><div><label>Nombre</label><input id="nombre" placeholder="Lechon"></div></div><label>PIN administrador de esta rifa</label><input id="pinRifa" placeholder="1234"><button id="createBtn" class="btnOk">Crear rifa</button><div id="createMsg" class="msg"></div></div>
+  <div class="card"><b>📋 Rifas existentes</b><div id="rifasBox" class="tableWrap"></div></div>
+</div>
+<script src="/admin.js"></script>
+</body>
+</html>

@@ -1,6 +1,8 @@
 {
-  "scripts": {
-    "dev": "netlify dev"
-  },
-  "dependencies": {}
+  "name": "rifita-full-netlify",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "googleapis": "^140.0.1"
+  }
 }
