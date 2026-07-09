@@ -52,3 +52,13 @@ Abrí tu URL de Netlify. Debería mantener el dominio de Netlify y no cargar App
 ## Qué quedó pendiente para una versión más profesional
 
 Esto es una migración rápida y práctica usando un puente compatible con `google.script.run`. Más adelante se puede separar el HTML, CSS y JS en archivos limpios y convertir cada llamada a `fetch()` manualmente.
+
+
+## FIX v2: puente GET
+
+Esta versión cambia el puente Netlify -> Apps Script para usar GET en vez de POST.
+Esto soluciona el caso donde PowerShell/Netlify devuelve `401 No autorizado` al hacer POST, aunque el link `/exec?action=init...` funcione bien en el navegador.
+
+Después de subir esta versión a GitHub, en Netlify hacé redeploy. En Apps Script pegá también el `apps-script/Code.gs` de esta carpeta y actualizá la implementación con nueva versión.
+
+Limitación: subir imágenes grandes de publicidad desde Netlify puede requerir una solución aparte, porque GET no sirve para enviar archivos grandes.

@@ -443,6 +443,16 @@ function doGet(e) {
     const action = e && e.parameter ? e.parameter.action : "";
     const codigoRifa = e && e.parameter ? e.parameter.codigoRifa : "";
 
+    if (action === "__call") {
+      let args = [];
+      try {
+        args = JSON.parse(e.parameter.args || "[]");
+      } catch (_) {
+        args = [];
+      }
+      return json_(apiNetlifyCall_(e.parameter.method, args, codigoRifa));
+    }
+
     if (action === "dashboard") {
       setCurrentRifa_(codigoRifa);
       return json_(apiGetDashboard());
@@ -1904,7 +1914,7 @@ function DEBUG_bomberos(){
 
 /** ========= NETLIFY BRIDGE =========
  * Permite que el frontend alojado en Netlify use estas funciones sin google.script.run.
- * Netlify llama a doPost con action="__call", method y args.
+ * Netlify llama por GET con action="__call", method y args. Esto evita el 401 que aparece en algunas cuentas al hacer POST anónimo a Apps Script.
  */
 function apiNetlifyCall_(method, args, codigoRifa) {
   try {

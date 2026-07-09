@@ -42,15 +42,19 @@ exports.handler = async function(event) {
 
     const appsScriptUrl = process.env.APPS_SCRIPT_URL || DEFAULT_APPS_SCRIPT_URL;
 
-    const response = await fetch(appsScriptUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "__call",
-        method,
-        args,
-        codigoRifa
-      })
+    // IMPORTANTE:
+    // Algunas implementaciones de Apps Script devuelven 401 cuando se las llama
+    // con POST desde servidores externos, aunque GET público funcione.
+    // Por eso este puente llama a Apps Script por GET con los argumentos codificados.
+    const url = new URL(appsScriptUrl);
+    url.searchParams.set("action", "__call");
+    url.searchParams.set("method", method);
+    url.searchParams.set("codigoRifa", codigoRifa);
+    url.searchParams.set("args", JSON.stringify(args));
+
+    const response = await fetch(url.toString(), {
+      method: "GET",
+      redirect: "follow"
     });
 
     const text = await response.text();
